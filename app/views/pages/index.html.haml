@@ -1,0 +1,24 @@
+= form_for root_path, :method => 'get' do
+  / = text_field_tag :page_url, params[:page_url]
+  = radio_button_tag("page_url", "https://auto.onliner.by/")
+  = label_tag :page_url, "Auto"
+  = radio_button_tag("page_url", "https://realt.onliner.by/")
+  = label_tag :page_url, "Realt"
+  = radio_button_tag("page_url", "https://tech.onliner.by/")
+  = label_tag :page_url, "Tech"
+  = radio_button_tag("page_url", "https://people.onliner.by/")
+  = label_tag :page_url, "Peoples"
+  = submit_tag 'Parse'
+%br
+- unless @data.nil?
+  - @case = @data.css('html.responsive-layout')[0].children[2].children[94].attributes.to_a.last.last.value.from(8).remove('/feed')
+  %h3= @case
+  = @data.css('div.news-tidings__subtitle').map do |i|
+    - @link = i.children[1].attributes.first.last.value
+    = link_to i.children[1].children[1].text, 'http://'+ @case + @link
+    %br
+    - @data_ext = Nokogiri::HTML(open('https://' + @case + @link))
+    = @data_ext.css('div.news-text').map do |t|
+      = t.text
+    %br
+    %br
